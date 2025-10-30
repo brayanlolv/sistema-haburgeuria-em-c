@@ -140,8 +140,10 @@ int menu(int lin1, int col1, int qtd, char lista[3][40],int pontoInicial){
         printf("%s",lista[i]);
         linha +=2;
         }
-       
-       //Aguarda tecla
+ 		
+		if(!pontoInicial){
+		return 1;	
+		}
        linhaCol(1,1);
        tecla= getch();
        linhaCol(22,1);
@@ -168,10 +170,140 @@ int menu(int lin1, int col1, int qtd, char lista[3][40],int pontoInicial){
      return opc;
 }     
 
+int listaTela(int lin1, int col1, int qtdx,int qtdy, char lista[10][2][30],int pontoInicial){
+     int opc=pontoInicial, lin2, col2, linha,i,j,tamMaxItem, tecla;
+     
+     //calcula as coordenadas
+//     tamMaxItem = strlen(lista[0][0]);
+	tamMaxItem = 30;
+     //tamanho maximo do item
+//     for(i=1; i<qtdx;i++){
+//     	for(j = 0; j < qtdy ; j++ ){
+//     		if(strlen(lista[i][j])>tamMaxItem){
+//          tamMaxItem = strlen(lista[i][j]); 
+//      	 } 
+//		}
+//    
+//     }
+//     lin2 = lin1+(qtd*2+2);
+//     col2 = col1+tamMaxItem+4;
+     lin2 = 30;
+     col2 =50;
+     
+     //Monta Tela
+     textColor(WHITE, _BLUE);
+     setlocale(LC_ALL,"C");
+     box(lin1,col1,lin2,col2);
+     setlocale(LC_ALL,"");
+     //laço das opcões
+     while(1){
+     
+        linha=lin1+2;
+        
+        for(i = 0; i < qtdx;i++){
+        
+			if(i+1==opc)textColor(BLACK, _LIGHTGREEN);
+            else textColor(WHITE, _BLUE);
+        	for(j = 0;j < qtdy; j++){
+        		 
+				linhaCol(linha,col1+2);
+				printf("%s",lista[i][j]);
+				linha++;
+			}
+        	linha++;
+		}
+//        for(i=0;i<qtd;i++){           
+//           if(i+1==opc)textColor(BLACK, _LIGHTGREEN);
+//           else textColor(WHITE, _BLUE);
+//        linhaCol(linha,col1+2);
+//        printf("%s",lista[i]);
+//        linha +=1;
+//        }
+// 		
+		if(!pontoInicial){
+		return 1;	
+		}
+       linhaCol(1,1);
+       tecla= getch();
+       linhaCol(22,1);
+       //printf(" tecla:  %d   ",tecla);  
+       //Opção
+       if(tecla==27){ //ESC
+       opc=0; break;
+       }
+       else if(tecla==13){ //ENTER
+       break;
+       }
+       //Seta para cima
+       else if(tecla==72){ //se possivel seleciona o item anterior - seta para cima
+            if(opc>pontoInicial)opc--;  // se opcao for maior que 1, pode voltar 
+       
+       }
+       else if(tecla==80 ){        //seta para baixo
+            if (opc<qtdx)opc++;                //Se opcao for menor que quantidade de itens, posso avançar
+                  
+                           
+       //printf("tecla: %d ",opc);     
+       }
+     }
+     return opc;
+}     
+
+int listateste(Cardapio* cdp){
+	
+	int i ;
+	
+	int opc;
+    char lista[10][2][30]={
+	{"voltar","p menu"},
+	{"Nome1","preco1"},
+	{"Nome1","preco1"},	
+	{"Nome1","preco1"},	
+	{"Nome1","preco1"},
+	};
+	
+//	strcpy(lista[0][0],cdp->itens[0].nome);
+	
+	
+	for(i = 0;i < cdp->qtd ;i++){
+		strcpy(lista[i + 1][0],cdp->itens[i].nome);
+		char str[20]; // buffer onde a string vai ser escrita
+    	sprintf(str, "%d", cdp->itens[i].preco); 	
+		strcpy(lista[i + 1][1],str);	
+		
+	}
+	
+	opc  = -1;
+	while(1){
+		if(opc < 0 ){
+				opc = listaTela(10,10, cdp->qtd + 1 ,2,lista,1);
+				continue;
+	}else 
+		if(opc == 1){
+			return 0;
+		}
+		opc = itemDetalhes(cdp,opc - 2 );
+		
+	}
+   
+//	
+//	if(opc == 1){
+//		return 0;
+//	}
+//	while(opc != 1){
+//		itemDetalhes(cdp,opc - 1 );
+		//fazer os detalhes retornar o numero do opc
+		
+//	}
+	
+	//implementar a telam detalhes aqui
+//	return 0;
+	
+}
 int cardapioMenu()
 {
     int opc;
-    char lista[5][40]={"bem vindo a noaswsa haburueria","escolha uma das opcoes","listar cardapio","adcioanr prato","remover prato"};
+    char lista[6][40]={"bem vindo a noaswsa haburueria","escolha uma das opcoes","listar cardapio","adcioanr prato","remover prato"};
     
     setlocale(LC_ALL,"");
     
@@ -188,6 +320,8 @@ int cardapioMenu()
   printf("");
   
   switch(opc){
+  	case 3:
+  		return 2 ;
   	case 4:
   		return 1;
   }
@@ -195,7 +329,7 @@ int cardapioMenu()
 
 }
 
-int telaAddPrato()
+int telaAddPrato(Cardapio * cdp)
 {
 	CardItem cditm;
 	int etapa = 0;
@@ -203,7 +337,7 @@ int telaAddPrato()
     char lista[5][40]={"tela de adicionar","comecar", "ok->", "desistir e votlar"};
     
     setlocale(LC_ALL,"");
-    opc = menu(10,10,4,lista,4);
+    opc = menu(10,10,4,lista,3);
     linhaCol(1,1);
     while(opc){
     	etapa++;
@@ -214,33 +348,77 @@ int telaAddPrato()
 		if(etapa == 1 ){
 				
 				strcpy(lista[1],"digete o nome do item:");
-				opc = menu(10,10,3,lista,4);
+				opc = menu(10,10,3,lista,0);
 				
 				linhaCol(1,1);
 				scanf("%s",&cditm.nome);
 		}
 		else if(etapa == 2 ){
 				strcpy(lista[1],"digete o preco do item( em centavos)");
-				opc = menu(10,10,3,lista,4);
+				opc = menu(10,10,3,lista,0);
 				linhaCol(1,1);
 				scanf("%d",&cditm.preco);
 		}
 		else if(etapa == 3){
 				linhaCol(1,1);
-				printf("etapa 3");
+				printf("cditm.nome = %s ",cditm.nome);
 			strcpy(lista[1],"item adcionado com sucesso");
 			strcpy(lista[2],"------------");
 			strcpy(lista[3],cditm.nome);
-			
-			char str[5];
-				sprintf(str, "%d", cditm.preco);
-				strcpy(lista[4],
-					strcat("preco: ",str)
-				);
-			menu(10,10,3,lista,3);
+//			
+			int numero = 1234;
+    		char str[20]; // buffer onde a string vai ser escrita
+
+			strcpy(lista[4],"preco:");
+    		sprintf(str, "%d", cditm.preco); 		
+			strcpy(lista[5],str);
+			strcpy(lista[6],"ok");
+			addItem(cdp,cditm);
+			menu(10,10,6,lista,6);
+			return 0;
 		}
 //       
 
     }
     return 0;
+}
+
+
+int itemDetalhes(Cardapio *cdp, int index)
+{
+    int opc;
+    char lista[10][2][30]={
+	{"nome: ",""},
+	{"preco: ",""},
+	{"voltar: ",""},
+	{"apagar",""}
+	};
+
+    
+    setlocale(LC_ALL,"");
+    strcpy(lista[0][1],cdp->itens[index].nome);
+	char str[20]; 
+    sprintf(str, "%d", cdp->itens[index].preco); 		
+	strcpy(lista[1][1],str);
+  	opc =   listaTela(10,10, 5 ,2,lista,3);
+      
+	    
+	    
+        linhaCol(1,1);
+        textColor(WHITE, _RED);
+        printf("\nEscolheu a opção %d",index );
+  textColor(WHITE, _BLACK);
+  linhaCol(24,1);
+  printf("");
+	if(opc == 3){
+		return -1;
+	} else if(opc== 4){
+		//provavelmente ele vai voltar para lista desatualizada,
+		//fazer uma funcao de draw e dar redraw
+		removerItem(cdp,index);
+		return -1;
+	}
+	return index + 2;
+  
+
 }

@@ -3,16 +3,12 @@
 
 #include "Cardapio.h"
 
-
+#include "tela20.h"
 #include "tela.h"
 
-int engine(int tela){
-	system("cls");
-	if(tela == 0){
-		return 	cardapioMenu();
-	}else if(tela == 1){
-		return 	 telaAddPrato();
-	}
+int engine(int tela ){
+
+	//o if 2 da tela da listqa vai estar na while
 }
 
 
@@ -20,18 +16,29 @@ int main(){
 
 	Cardapio* cdp = criarCardapio();
 
-	CardItem c1 = {"x-tudo",20000};	
-	CardItem c2 = {"x-bacon",15000};
-	addItem(cdp,c2);
-	addItem(cdp,c1);
+//	CardItem c1 = {"x-tudo",20000};	
+//	CardItem c2 = {"x-bacon",15000};
+//	addItem(cdp,c2);
+//	addItem(cdp,c1);
+//	printf("qtd do cdp %d",cdp->qtd);
 	
-	
+	 
 	int tela = 0;
 	while(1){
-		tela = engine(tela);
+		
+		//salvarCardapio(cdp);
+		
+		if(tela == 0){
+			tela = cardapioMenu();
+		}else if(tela == 1){
+			tela = telaAddPrato(cdp);
+		}else if(tela == 2){
+			tela = listateste(cdp);
+		}
+		
 	}
 //	printf("oba");
-
+//
 //
 //	
 
